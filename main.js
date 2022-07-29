@@ -30,7 +30,7 @@ const player = {
         borderColor: "#ff0000",
         gridColor: "e6e6e6",
     },
-}
+};
 
 //Communication servers
 class Ogario {};
@@ -40,6 +40,13 @@ const chatApi = {
     server1: Ogario,
     server2: Agartool // Not sure yet what the purpose of this will be
 };
+
+// Client
+class Client {
+    constructor(){
+        this.clients = [];
+    };
+}
 
 // Multibox
 class Multibox {
