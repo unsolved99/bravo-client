@@ -6,8 +6,30 @@
 // Player
 const player = {
     mouseCoords: {x: 0, y: 0},
-    game_sttings: {},
-    theme_ettings: {},
+    gameSettings: {
+        animationDelay: 140,
+        jellyPhysics: false,
+        showMyName: true,
+        showMyMass: true,
+        showEveryonesName: true,
+        showEveryonesMass: true,
+        showLeaderboard: true,
+        showLeaderboardMass: false,
+        ShowTeamTop5: true,
+        showFPS: true,
+        showPING: true,
+        unlockZoom: false, // Can scroll out more
+        showGrid: false,
+        showMapBorders: true,
+        borderSize: 1,
+        enableMultibox: false,
+        showChat: false,
+    },
+    themeSettings: {
+        backgroundColor: "#ffffff",
+        borderColor: "#ff0000",
+        gridColor: "e6e6e6",
+    },
 }
 
 //Communication servers
@@ -28,5 +50,18 @@ class Multibox {
 };
 
 // Rendering
+const camera = {
+    x: 0,
+    y: 0,
+    target: {
+        x: 0,
+        y: 0,
+        scale: 1,
+    },
+    viewportScale: 1,
+    playerZoom: 1,
+    sizeScale: 1,
+    scale: 1,
+};
 
 
