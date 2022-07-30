@@ -42,7 +42,7 @@ class Ogario {
 
     connect(server){
 
-        jslogger.info('OGARIO', 'Connecting to chat server..');
+        jslogger.info('OGARIO', 'Connecting..');
         this.socket = new WebSocket(server);
         this.socket.ogarioWS = true;
         this.socket.binaryType = 'arraybuffer';
@@ -51,7 +51,7 @@ class Ogario {
             jslogger.success('OGARIO', 'Connection established!');
             toastr.success('Connected to chat server!');
             this.errorCount = 0;
-            
+
         };
 
         this.socket.onclose = () => {
@@ -67,7 +67,7 @@ class Ogario {
         };
 
         this.socket.onerror = (error) => {
-            jslogger.error('OGARIO', 'Failed to connect');
+            jslogger.error('OGARIO', 'Failed to established');
         };
 
     };
