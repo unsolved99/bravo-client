@@ -5,17 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>BRAVO AGAR</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://pixijs.download/release/pixi.min.js"></script>
 </head>
 <body>
+<script>
+const app = new PIXI.Application({
+	autoResize: true,
+    resolution: window.devicePixelRation,
+    view: document.getElementById('canvas'),
+    backgroundColor: 808080
+});
+document.body.appendChild(app.view);
+
+// Lets create a red square, this isn't 
+// necessary only to show something that can be position
+// to the bottom-right corner
+
+
+// Listen for window resize events
+window.addEventListener('resize', resize);
+
+// Resize function window
+function resize() {
+	// Resize the renderer
+	app.renderer.resize(window.innerWidth, window.innerHeight);
+  
+  // You can use the 'screen' property as the renderer visible
+  // area, this is more useful than view.width/height because
+  // it handles resolution
+}
+
+resize();
+      </script>
+
     <!-- Game UI-->
-    <div id="wrapper-gui">
-        <div class="box rounded-pill">
-            <div class="skin-box rounded">
-
-            </div>
-        </div>
-    </div>
-
+    <!-- Leaderboard -->
+    <!-- Chatbox -->
     <!-- Canvas -->
     <canvas id="canvas"></canvas>
 

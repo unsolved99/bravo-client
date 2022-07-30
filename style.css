@@ -26,18 +26,3 @@ body {
 .rounded {
     border-radius: 50%;
 }
-
-.box {
-    position: relative;
-    min-width: 450px;
-    height: 130px;
-    background-color: #00000035;
-
-}
-.skin-box{
-    position: absolute;
-    top: -25px;
-    background-color: gray;
-    width: 180px;
-    height: 180px;
-}
