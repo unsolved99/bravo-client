@@ -33,7 +33,67 @@ const player = {
 };
 
 //Communication servers
-class Ogario {};
+class Ogario {
+    constructor(){
+        this.chatServer = "wss://snez.dev:8080/ws?030";
+        this.errorCount = 0;
+        this.maxErrors = 15;    
+    };
+
+    connect(server){
+
+        jslogger.info('OGARIO', 'Connecting to chat server..');
+        this.socket = new WebSocket(server);
+        this.socket.ogarioWS = true;
+        this.socket.binaryType = 'arraybuffer';
+
+        this.socket.onopen = () => {
+            jslogger.success('OGARIO', 'Connection established!');
+            toastr.success('Connected to chat server!');
+            this.errorCount = 0;
+            
+        };
+
+        this.socket.onclose = () => {
+
+            if (this.errorCount < this.maxErrors) {
+                jslogger.warning('OGARIO', 'Reconnecting..');
+                this.reconnect();
+                this.errorCount++;
+             } else {
+                this.cleanUp();
+                this.closeConnection();
+            }
+        };
+
+        this.socket.onerror = (error) => {
+            jslogger.error('OGARIO', 'Failed to connect');
+        };
+
+    };
+
+    reconnect(){
+
+        setTimeout(() => {
+            this.connect(this.chatServer);
+        }, 1000);
+
+    };
+
+    cleanUp(){
+        this.errorCount = 0;
+    };
+
+    closeConnection(){
+        this.socket.close();
+    }
+
+    isSocketOpen() {
+        return this.socket !== null && this.socket.readyState === this.socket.OPEN;
+    };
+
+
+};
 class Agartool{};
 
 const chatApi = {
