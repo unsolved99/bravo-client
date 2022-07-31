@@ -49,10 +49,11 @@ const player = {
 //Communication servers
 class Ogario {
     constructor(){
-        this.chatServer = "wss://snez.dev:8080/ws?030";
-        this.errorCount = 0;
-        this.maxErrors = 15;  
-        this.connect(this.chatServer);  
+        this.socket = null;
+        this.chat_server = "wss://snez.dev:8080/ws?030";
+        this.error_count = 0;
+        this.max_errors = 15;  
+        this.connect(this.chat_server);  
     };
 
     connect(server){
@@ -73,16 +74,16 @@ class Ogario {
             buf.setUint16(1, 40, true);
             this.sendBuffer(buf);
             this.payload();
-            this.errorCount = 0;
+            this.error_count = 0;
 
         };
 
         this.socket.onclose = () => {
 
-            if (this.errorCount < this.maxErrors) {
+            if (this.error_count < this.max_errors) {
                 jslogger.warning('OGARIO', 'Reconnecting..');
                 this.reconnect();
-                this.errorCount++;
+                this.error_count++;
              } else {
                 this.cleanUp();
                 this.closeConnection();
@@ -98,14 +99,14 @@ class Ogario {
     reconnect(){
 
         setTimeout(() => {
-            this.connect(this.chatServer);
+            this.connect(this.chat_server);
         }, 1000);
 
     };
 
     cleanUp(){
 
-        this.errorCount = 0;
+        this.error_count = 0;
 
     };
 
@@ -226,6 +227,8 @@ class Client {
 
         this.client_key = config.agario.client_key; 
         this.protocol_key = config.agario.protocol_key;
+
+        this.server_time = null;
         
 
         this.connect(this.ws);
@@ -259,25 +262,37 @@ class Client {
 
         this.socket_opened = true;
 
-        jslogger.success(`${this.type}`, `Connected to ${ws}`);
-        toastr.success(`[${this.type}] Connected to ${ws}`);
+        jslogger.success(`${this.type}`, `Connected ${this.ws}`);
+        toastr.success(`<b>[${this.type}]</b> Connected!`);
 
     };
 
-    onMessage(event) {
+    onMessage(msg) {
 
-        event = new DataView(event.data);
+        msg = new DataView(msg.data);
 
         if (this.protocol_key){
-            event = this.shift_message(event, this.protocol_key ^ this.client_version);
+            msg = this.shift_message(msg, this.protocol_key ^ this.client_version);
         }
 
-        this.protocol_handeler(event);
+        this.protocol_handeler(msg);
 
     };
 
-    onClose(event) {};
-    onError(event) {};
+    onClose(event) {
+        //this.flushCellsData();
+        //jslogger.warning(`${this.type}`, `Disconnected ${this.ws}`, event);
+        console.log(event);
+        toastr.warning(`<b>[${this.type}]</b> Disconnected!`);
+
+    };
+
+    onError(event) {
+        //this.flushCellsData();
+        //jslogger.error(`${this.type}`, `Can't connect ${this.ws}`);
+        toastr.error(`<b>[${this.type}]</b> Failed to connect!`);
+        console.log(event);
+    };
 
 
     isSocketOpen() {
@@ -355,22 +370,21 @@ class Client {
                 view.setUint8(0,227);
                 view.setUint16(1, ping);
                 this.sendMessage(view);
-                jslogger.debug(`${this.type}`, `[Protocol ${opCodes.PING_PONG}] Ping Pong`);
                 break;
 
             // GENERATE_KEYS
             case opCodes.GENERATE_KEYS:
                 this.protocol_key = view.getUint32(offset, true);
-                jslogger.debug(`${this.type}`, `[Protocol ${opCodes.GENERATE_KEYS}] Received protocol key: ${this.protocol_key}`);
+                jslogger.debug(`${this.type}`, `Received protocol key: ${this.protocol_key}`);
                 
                 const agarioReader = new Uint8Array(view.buffer, offset += 4);
-                this.clientKey = this.generate_client_key(this.ws, agarioReader);
+                this.client_key = this.generate_client_key(this.ws, agarioReader);
                 break;
 
             //SERVER_TIME
             case opCodes.SERVER_TIME:
-                //var serverTime = view.getUint32(offset, true) * 1000;
-                //console.log(`[Protocol 242] Received server time: ${serverTime}`);
+                this.server_time = view.getUint32(offset, true) * 1000;
+                jslogger.info(`${this.type}`, `Received server time: ${this.server_time}`);
 
         }
     };
