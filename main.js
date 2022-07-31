@@ -5,7 +5,7 @@
 
 // Player
 const player = {
-
+    wsServer: "",
     partyToken: "",
     wsServerToken: "",
 
@@ -171,10 +171,72 @@ const chatApi = {
     server2: Agartool // Not sure yet what the purpose of this will be
 };
 
+
+
 // Client
+const agarioConfig = {
+    protocolVersion: 23,
+    clientVersion: 31107,
+    clientKey: null,
+    protocolKey: null,
+};
+
+const opCodes = Object.freeze({
+    SOCKET_CONNECTING: 0,
+    SOCKET_OPENED: 1,
+    SOCKET_CLOSING: 2,
+    SOCKET_CLOSED: 3,
+    VIEWPORT_UPDATE: 17,
+    FLUSH: 18,
+    ADD_OWN_CELL: 32,
+    LEADERBOARD: 53,
+    LEADERBOARD2: 54,
+    GHOST_CELLS: 69,
+    RECAPTCHA_V2: 85,
+    RECAPTCHA_V3: 87,
+    MOBILE_DATA: 102,
+    TOKEN_ACCEPTED: 103,
+    SERVER_DEATH: 113,
+    SPECTATE_MODE_IS_FULL: 114,
+    OUTDATED_CLIENT_ERROR: 128,
+    PING_PONG: 226,
+    GENERATE_KEYS: 241,
+    SERVER_TIME: 242,
+    COMPRESSED_MESSAGE: 255
+});
+
 class Client {
-    constructor(){
-        this.clients = [];
+    constructor(type, ws){
+        this.type = type;
+        this.ws = ws;
+        this.integrity = ws.indexOf('agar.io') > -1
+        this.protocolVersion = agarioConfig.protocolVersion;
+        this.clientVersion = agarioConfig.clientVersion;
+        this.clientKey = agarioConfig.clientKey; 
+        this.protocolKey = agarioConfig.protocolKey;
+        this.socket_opened = false;
+        this.connect(this.ws);
+    };
+    
+    connect(ws){
+        
+        jslogger.debug(`${this.type}`, `Connecting to ${ws}`);
+
+        this.socket = new WebSocket(ws);
+        this.socket.binaryType = 'arraybuffer';
+        this.socket.onmessage = this.onMessage.bind(this);
+        this.socket.onerror = this.onError.bind(this);
+        this.socket.onclose = this.onClose.bind(this);
+        this.socket.onopen = this.onOpen.bind(this);
+    };
+
+    onOpen() {
+
+        jslogger.success(`${this.type}`, `Connected to ${ws}`);
+
+
+        this.socket_opened = true;
+
     };
 }
 
@@ -188,17 +250,7 @@ class Multibox {
 
 // Rendering
 const camera = {
-    x: 0,
-    y: 0,
-    target: {
-        x: 0,
-        y: 0,
-        scale: 1,
-    },
-    viewportScale: 1,
-    playerZoom: 1,
-    sizeScale: 1,
-    scale: 1,
+
 };
 
 
