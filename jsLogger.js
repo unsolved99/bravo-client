@@ -75,3 +75,5 @@ try {
 } catch (e) {
     console.log("Please ignore it...", e)
 }
+
+jslogger.setLevelToVerbose(true);
