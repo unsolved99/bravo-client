@@ -281,17 +281,15 @@ class Client {
 
     onClose(event) {
         //this.flushCellsData();
-        //jslogger.warning(`${this.type}`, `Disconnected ${this.ws}`, event);
-        console.log(event);
+        jslogger.warning(`${this.type}`, `Disconnected ${this.ws} | Reason: ${event.reason}`);
         toastr.warning(`<b>[${this.type}]</b> Disconnected!`);
 
     };
 
     onError(event) {
         //this.flushCellsData();
-        //jslogger.error(`${this.type}`, `Can't connect ${this.ws}`);
+        jslogger.error(`${this.type}`, `Can't connect ${this.ws}`);
         toastr.error(`<b>[${this.type}]</b> Failed to connect!`);
-        console.log(event);
     };
 
 
