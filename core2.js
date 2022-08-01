@@ -28,7 +28,7 @@ class Client {
           this.type = type;
           this.server = server;
 
-          
+
           this.connect(this.server);
      };
 
@@ -77,7 +77,6 @@ class Client {
 
           jslogger.error(`${this.type}`, `Can't connect ${this.server}`);
           toastr.error(`<b>[${this.type}]</b> Failed to connect!`);
-
      };
      onMessage(event) {
 
