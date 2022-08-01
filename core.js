@@ -219,7 +219,7 @@ class Client {
         this.socket = null;
         this.socket_opened = false;
 
-        this.integrity = ws.indexOf('agar.io') > -1
+        this.integrity = true;
 
         this.protocol_version = config.agario.protocol_version;
         this.sub_protocol_version = config.imsolopro.protocol_version;
@@ -235,6 +235,7 @@ class Client {
     };
     
     connect(ws){
+
         
         this.socket = new WebSocket(ws);
         this.socket.binaryType = 'arraybuffer';
@@ -251,6 +252,7 @@ class Client {
         // Sending protocol version
         let protocol_version = this.createView(5);
         protocol_version.setUint8(0, 254);
+        this.integrity = this.ws.indexOf('agar.io') > -1
         protocol_version.setUint32(1, this.integrity ? this.protocol_version : this.sub_protocol_version, true);
         this.sendMessage(protocol_version);
 
@@ -264,6 +266,7 @@ class Client {
 
         jslogger.success(`${this.type}`, `Connected ${this.ws}`);
         toastr.success(`<b>[${this.type}]</b> Connected!`);
+
 
     };
 
@@ -279,14 +282,16 @@ class Client {
 
     };
 
-    onClose(event) {
+    onClose() {
         //this.flushCellsData();
-        jslogger.warning(`${this.type}`, `Disconnected ${this.ws} | Reason: ${event.reason}`);
+        jslogger.warning(`${this.type}`, `Disconnected ${this.ws}`);
         toastr.warning(`<b>[${this.type}]</b> Disconnected!`);
+
+        clearInterval(this.pingLoop);
 
     };
 
-    onError(event) {
+    onError() {
         //this.flushCellsData();
         jslogger.error(`${this.type}`, `Can't connect ${this.ws}`);
         toastr.error(`<b>[${this.type}]</b> Failed to connect!`);
@@ -320,7 +325,7 @@ class Client {
     };
 
     protocol_handeler(view){
-
+        
         const encode = () => {
             for (let text = '';;) {
                 const string = view.getUint8(offset++);
@@ -334,8 +339,14 @@ class Client {
 
         var offset = 0;
         let opCode = view.getUint8(offset++);
-
         
+        // Sending ping for private servers
+        if (opCode == 64) {
+            this.pingLoop = setInterval( () => {
+                this.sendBuffer(new Uint8Array([254]));
+            }, 500);
+        }
+
         if (opCode == 54) { 
             opCode = 53;
         }
@@ -369,6 +380,7 @@ class Client {
                 view.setUint16(1, ping);
                 this.sendMessage(view);
                 break;
+
 
             // GENERATE_KEYS
             case opCodes.GENERATE_KEYS:
