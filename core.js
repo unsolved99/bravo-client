@@ -353,6 +353,7 @@ class Client {
 
         // Handeling opCodes
         switch (opCode) {
+            
             // SOCKET_CONNECTING
             case opCodes.SOCKET_CONNECTING :
                 break;
